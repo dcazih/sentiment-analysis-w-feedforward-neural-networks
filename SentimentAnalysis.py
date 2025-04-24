@@ -11,7 +11,7 @@ df = pd.read_csv('movie_data.csv', encoding='utf-8')
 
 # TF-IDF vectorization
 v = TfidfVectorizer(max_features=5000)
-X = v.fit_transform(df['review']).toarray();
+X = v.fit_transform(df['review']).toarray()
 y = df['sentiment'].values
 
 # Split into train (70%) and test (30%)
@@ -24,19 +24,20 @@ X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
 y_test_tensor = torch.tensor(y_test, dtype=torch.long)
 
 # Dataloaders
-train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=64, shuffle=True)
-test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=64)
+train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=128)
+test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=128)
 
 fnn = FNN()
-optimizer = torch.optim.Adam(fnn.parameters(), lr=0.0001)
+optimizer = torch.optim.Adam(fnn.parameters(), lr=0.001)
 L = nn.CrossEntropyLoss()
 
 # Training loop
 epochs = 10
 for epoch in range(epochs):
+    total_loss = 0.0 
     for (x, y) in train_loader:
         optimizer.zero_grad()
-        output = fnn(X)
+        output = fnn(x)
         loss = L(output, y)
         loss.backward()
         optimizer.step()
@@ -47,7 +48,7 @@ fnn.eval()
 with torch.no_grad():
     X_sample = X_test_tensor[:100]
     y_sample = y_test_tensor[:100]
-    logits = model(X_sample)
+    logits = fnn(X_sample)
     predictions = torch.argmax(logits, dim=1)
     accuracy = (predictions == y_sample).sum().item() / len(y_sample)
     print(f"Accuracy on 100 test samples: {accuracy:.2f}")
