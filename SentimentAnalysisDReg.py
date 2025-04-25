@@ -34,6 +34,7 @@ L = nn.CrossEntropyLoss()
 
 # Training loop
 epochs = 10
+print("Training of dropout regularization FNN model with  started...")
 start = time.time()
 for epoch in range(epochs):
     total_loss = 0.0 
@@ -46,7 +47,7 @@ for epoch in range(epochs):
         optimizer.step()
         total_loss += loss.item()
     endepoch = time.time()
-    print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Time: {endepoch - startepoch:.3f}s')
+    print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Epoch Time: {endepoch - startepoch:.3f}s')
 end = time.time()
 
 # Eval accuracy
@@ -54,4 +55,4 @@ with torch.no_grad():
     logits = fnn(X_test_tensor)
     predictions = torch.argmax(logits, dim=1)
     accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
-    print(f"Final Evaluation: Accuracy on test data: {accuracy:.3f}, Time: {end - start:.3f}")
+    print(f"\nFinal Evaluation - Accuracy on test data: {accuracy:.3f}, Training Time: {end - start:.3f}")

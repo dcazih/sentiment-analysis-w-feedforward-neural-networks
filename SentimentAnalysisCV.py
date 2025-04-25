@@ -35,6 +35,7 @@ accuracies = []
 times = []
 
 # K-Fold Cross Validation
+print("Training of K-Fold cross validation FNN model started...")
 for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
 
     print(f'Fold {fold + 1}/{k}')
@@ -60,6 +61,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
     for epoch in range(epochs):
         # Training
         total_loss = 0.0 
+        startepoch = time.time()
         for (x, y) in train_loader:
             optimizer.zero_grad()
             output = fnn(x)
@@ -67,7 +69,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-
+        endepoch = time.time()
         # Validation accuracy
         val_correct = 0
         val_total = 0
@@ -90,7 +92,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
             break
 
         # Print loss and validation accuracy
-        print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Validation Accuracy : {val_accuracy:.3f}')
+        print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Validation Accuracy : {val_accuracy:.3f}, Epoch Time: {endepoch - startepoch:.3f}s')
     
     end = time.time()
     times.append(end - start) # Calculate time for each fold
@@ -109,7 +111,5 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
 # Calculate average metrics
 avg_accuracy = sum(accuracies) / len(accuracies)
 avg_time = sum(times) / len(times)
-
-print(f"\n\nAverage Accuracy: {avg_accuracy:.3f}")
-print(f"Average Training Time per Fold: {avg_time:.2f} secs")
+print(f"\nFinal K-Fold Evaluation - Avg Accuracy: {avg_accuracy:.3f}, Avg Training Time per Fold: {avg_time:.2f}s")
 
