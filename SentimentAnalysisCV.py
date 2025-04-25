@@ -51,9 +51,14 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
     L = nn.CrossEntropyLoss()
     
     # Training loop
+    best_val_acc = 0
+    epochs_without_improvement = 0
+    patience = 3
+
     starttime = time.time()
     epochs = 10
     for epoch in range(epochs):
+        # Training
         total_loss = 0.0 
         for (x, y) in train_loader:
             optimizer.zero_grad()
@@ -62,8 +67,8 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-    
-        # Validation accuracy (during training loop)
+
+        # Validation accuracy
         val_correct = 0
         val_total = 0
         with torch.no_grad():
@@ -74,12 +79,24 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
                 val_total += y_val.size(0)
             val_accuracy = val_correct / val_total
 
+        # Validation accuracy check
+        if val_accuracy > best_val_acc:
+            best_val_acc = val_accuracy
+            epochs_without_improvement = 0
+        else: epochs_without_improvement += 1
+        
+        if epochs_without_improvement >= patience:
+            print(f"Early stopping at epoch {epoch+1}")
+            break
+
         # Print loss and validation accuracy
-        print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Validation Accuracy : {val_accuracy:.3f}\n')
+        print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Validation Accuracy : {val_accuracy:.3f}')
+    
     end = time.time()
     times.append(end - starttime) # Calculate time for each fold
 
-    print(f'↑ Fold {fold + 1} Time: {end - starttime:.2f} secs ↑')
+    # Print time of current fold
+    print(f'↑ Fold {fold + 1} — Time: {end - starttime:.2f} secs, ', end="")
 
     # Eval accuracy
     with torch.no_grad():
@@ -87,12 +104,12 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
         predictions = torch.argmax(logits, dim=1)
         accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
         accuracies.append(accuracy)
-        print(f"Fold {fold + 1} accuracy on test samples: {accuracy:.3f}")
+        print(f"Accuracy: {accuracy:.3f} ↑\n")
 
 # Calculate average metrics
 avg_accuracy = sum(accuracies) / len(accuracies)
 avg_time = sum(times) / len(times)
 
-print(f"\nAverage Accuracy: {avg_accuracy:.3f}")
+print(f"\n\nAverage Accuracy: {avg_accuracy:.3f}")
 print(f"Average Training Time per Fold: {avg_time:.2f} secs")
 
