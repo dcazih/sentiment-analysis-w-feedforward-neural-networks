@@ -2,8 +2,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class FNN(nn.Module):
-    def __init__(self):
+    def __init__(self, use_dropout=False, dropout_rate=0.5):
         super().__init__()
+        self.use_dropout = use_dropout 
+        self.dropout = nn.Dropout(p=dropout_rate)
         self.fc1 = nn.Linear(5000, 256)
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 64)
@@ -11,6 +13,9 @@ class FNN(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
+        if self.use_dropout: x = self.dropout(x)
         x = F.relu(self.fc2(x))
+        if self.use_dropout: x = self.dropout(x)       
         x = F.relu(self.fc3(x))
+        if self.use_dropout: x = self.dropout(x)
         return self.out(x)  # raw logits, softmax is applied by loss function instead
