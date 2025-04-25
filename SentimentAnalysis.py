@@ -49,4 +49,4 @@ with torch.no_grad():
     logits = fnn(X_test_tensor)
     predictions = torch.argmax(logits, dim=1)
     accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
-    print(f"Accuracy on 100 test samples: {accuracy:.3f}")
+    print(f"Accuracy on all test samples: {accuracy:.3f}")
