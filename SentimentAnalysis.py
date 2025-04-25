@@ -32,7 +32,7 @@ optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
 L = nn.CrossEntropyLoss()
 
 # Training loop
-epochs = 20
+epochs = 10
 for epoch in range(epochs):
     total_loss = 0.0 
     for (x, y) in train_loader:
@@ -43,12 +43,10 @@ for epoch in range(epochs):
         optimizer.step()
         total_loss += loss.item()
     print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}')
-        
-fnn.eval()
+
+# Eval accuracy
 with torch.no_grad():
-    X_sample = X_test_tensor[:100]
-    y_sample = y_test_tensor[:100]
-    logits = fnn(X_sample)
+    logits = fnn(X_test_tensor)
     predictions = torch.argmax(logits, dim=1)
-    accuracy = (predictions == y_sample).sum().item() / len(y_sample)
-    print(f"Accuracy on 100 test samples: {accuracy:.2f}")
+    accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
+    print(f"Accuracy on 100 test samples: {accuracy:.3f}")
