@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -33,8 +34,10 @@ L = nn.CrossEntropyLoss()
 
 # Training loop
 epochs = 10
+start = time.time()
 for epoch in range(epochs):
     total_loss = 0.0 
+    startepoch = time.time()
     for (x, y) in train_loader:
         optimizer.zero_grad()
         output = fnn(x)
@@ -42,11 +45,13 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
-    print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}')
+    endepoch = time.time()
+    print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Time: {endepoch - startepoch:.3f}s')
+end = time.time()
 
 # Eval accuracy
 with torch.no_grad():
     logits = fnn(X_test_tensor)
     predictions = torch.argmax(logits, dim=1)
     accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
-    print(f"Accuracy on test reviews: {accuracy:.3f}")
+    print(f"Final Evaluation: Accuracy on test data: {accuracy:.3f}, Time: {end - start:.3f}")

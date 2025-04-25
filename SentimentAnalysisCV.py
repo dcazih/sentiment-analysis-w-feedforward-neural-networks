@@ -55,7 +55,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
     epochs_without_improvement = 0
     patience = 3
 
-    starttime = time.time()
+    start = time.time()
     epochs = 10
     for epoch in range(epochs):
         # Training
@@ -93,7 +93,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
         print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Validation Accuracy : {val_accuracy:.3f}')
     
     end = time.time()
-    times.append(end - starttime) # Calculate time for each fold
+    times.append(end - start) # Calculate time for each fold
 
     # Print time of current fold
     print(f'↑ Fold {fold + 1} — Time: {end - starttime:.2f} secs, ', end="")
