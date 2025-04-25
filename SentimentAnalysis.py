@@ -28,11 +28,11 @@ train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_s
 test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=128)
 
 fnn = FNN()
-optimizer = torch.optim.Adam(fnn.parameters(), lr=0.001)
+optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
 L = nn.CrossEntropyLoss()
 
 # Training loop
-epochs = 10
+epochs = 20
 for epoch in range(epochs):
     total_loss = 0.0 
     for (x, y) in train_loader:

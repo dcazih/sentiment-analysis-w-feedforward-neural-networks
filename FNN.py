@@ -13,4 +13,4 @@ class FNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
-        return self.out(x)  # raw logits, softmax is applied by loss function
+        return self.out(x)  # raw logits, softmax is applied by loss function instead

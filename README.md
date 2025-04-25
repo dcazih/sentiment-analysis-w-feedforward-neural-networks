@@ -76,5 +76,5 @@ Start it: `source venv/bin/activate`
 ### Installation
 
 Install dependencies:
-`pip install -r meta/requirements.txt`
+`pip install -r requirements.txt`
 
