@@ -34,7 +34,7 @@ L = nn.CrossEntropyLoss()
 
 # Training loop
 epochs = 10
-print("Training of dropout regularization FNN model with  started...")
+print("Training of dropout regularization FNN model started...")
 start = time.time()
 for epoch in range(epochs):
     total_loss = 0.0 
