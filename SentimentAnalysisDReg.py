@@ -26,15 +26,16 @@ X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
 y_test_tensor = torch.tensor(y_test, dtype=torch.long)
 
 # Dataloaders
-train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=128)
-test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=128)
+train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=512)
+test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=512)
 
+# Create FNN model
 fnn = FNN(use_dropout=True, dropout_rate=0.5)
 optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
 L = nn.CrossEntropyLoss()
 
 # Training Dropout Regularization Loop
-epochs = 10
+epochs = 6
 print("Training of dropout regularization FNN model started...")
 start = time.time()
 for epoch in range(epochs):
