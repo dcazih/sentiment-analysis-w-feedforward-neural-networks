@@ -98,7 +98,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
     times.append(end - start) # Calculate time for each fold
 
     # Print time of current fold
-    print(f'↑ Fold {fold + 1} — Time: {end - starttime:.2f} secs, ', end="")
+    print(f'↑ Fold {fold + 1} — Time: {end - start:.2f} secs, ', end="")
 
     # Eval accuracy
     with torch.no_grad():
