@@ -13,9 +13,8 @@ class FNN(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
-        if self.use_dropout: x = self.dropout(x)
         x = F.relu(self.fc2(x))
         if self.use_dropout: x = self.dropout(x)       
         x = F.relu(self.fc3(x))
-        if self.use_dropout: x = self.dropout(x)
+        #if self.use_dropout: x = self.dropout(x)
         return self.out(x)  # raw logits, softmax is applied by loss function instead
