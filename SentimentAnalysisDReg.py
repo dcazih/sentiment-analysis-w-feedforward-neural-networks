@@ -30,7 +30,8 @@ train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_s
 test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size=512)
 
 # Create FNN model
-fnn = FNN(use_dropout=True, dropout_rate=0.5)
+fnn_dropout = FNN(use_dropout=True, dropout_rate=0.5)
+fnn_dropout.train()
 optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
 L = nn.CrossEntropyLoss()
 
@@ -43,7 +44,7 @@ for epoch in range(epochs):
     startepoch = time.time()
     for (x, y) in train_loader:
         optimizer.zero_grad()
-        output = fnn(x)
+        output = fnn_dropout(x)
         loss = L(output, y)
         loss.backward()
         optimizer.step()
@@ -52,8 +53,12 @@ for epoch in range(epochs):
     print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Epoch Time: {endepoch - startepoch:.3f}s')
 end = time.time()
 
+
+# Train a baseline model without dropout
 fnn_baseline = FNN(use_dropout=False)
+fnn_baseline.train()
 optimizer_baseline = torch.optim.AdamW(fnn_baseline.parameters(), lr=0.0001, weight_decay=0.01)
+L_2 = nn.CrossEntropyLoss()
 
 # Training Baseline Loop
 print("Training of baseline FNN model started...")
@@ -64,24 +69,26 @@ for epoch in range(epochs):
     for (x, y) in train_loader:
         optimizer_baseline.zero_grad()
         output = fnn_baseline(x)
-        loss = L(output, y)
+        loss = L_2(output, y)
         loss.backward()
         optimizer_baseline.step()
         total_loss += loss.item()
     endepoch = time.time()
     print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader)}, Epoch Time: {endepoch - startepoch:.3f}s')
 end_baseline = time.time()
+print("Training Completed\n")
 
-fnn.eval()
+
+# Evaluate the accuracy of baseline and dropout models
+fnn_dropout.eval()
 fnn_baseline.eval()
-# Eval accuracy
 with torch.no_grad():
     # baseline
     logits_baseline     = fnn_baseline(X_test_tensor)
     predictions_baseline = torch.argmax(logits_baseline, dim=1)
     accuracy_baseline    = (predictions_baseline == y_test_tensor).sum().item() / len(y_test_tensor)
     # dropout
-    logits_dropout      = fnn(X_test_tensor)
+    logits_dropout      = fnn_dropout(X_test_tensor)
     predictions_dropout  = torch.argmax(logits_dropout, dim=1)
     accuracy_dropout     = (predictions_dropout == y_test_tensor).sum().item() / len(y_test_tensor)
 print(f"\nBaseline Evaluation - Accuracy on test data: {accuracy_baseline:.3f}")
@@ -104,9 +111,9 @@ for i in range(5):
 
     # train one dropout model on this
     m = FNN(use_dropout=True, dropout_rate=0.5)
+    m.train()
     opt = torch.optim.AdamW(m.parameters(), lr=0.0001, weight_decay=0.01)
     start_bag = time.time()
-    m.train()
     for epoch in range(epochs):
         for xb, yb in bag_loader:
             opt.zero_grad()
@@ -121,6 +128,7 @@ for i in range(5):
 
 # Ensemble evaluation by majority vote
 print("\nEvaluating bagged ensemble…")
+m.eval()
 with torch.no_grad():
     # get the predictions
     all_preds = torch.stack([

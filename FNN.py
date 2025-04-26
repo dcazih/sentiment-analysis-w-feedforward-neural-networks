@@ -9,12 +9,12 @@ class FNN(nn.Module):
         self.fc1 = nn.Linear(5000, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, 64)
-        self.out = nn.Linear(64, 2)  # Binary classification (0 or 1)
+        self.out = nn.Linear(64, 2)  # Binary classification (neg - 0 or pos - 1)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         if self.use_dropout: x = self.dropout(x)       
         x = F.relu(self.fc3(x))
-        #if self.use_dropout: x = self.dropout(x)
-        return self.out(x)  # raw logits, softmax is applied by loss function instead
+        if self.use_dropout: x = self.dropout(x)
+        return self.out(x) 

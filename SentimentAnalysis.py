@@ -30,6 +30,7 @@ test_loader = DataLoader(TensorDataset(X_test_tensor, y_test_tensor), batch_size
 
 # Create FNN model
 fnn = FNN()
+fnn.train()
 optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
 L = nn.CrossEntropyLoss()
 
@@ -52,6 +53,7 @@ for epoch in range(epochs):
 end = time.time()
 
 # Eval accuracy
+fnn.eval()
 with torch.no_grad():
     logits = fnn(X_test_tensor)
     predictions = torch.argmax(logits, dim=1)

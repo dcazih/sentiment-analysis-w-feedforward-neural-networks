@@ -47,7 +47,8 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
     train_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=128, sampler=train_sampler)
     val_loader = DataLoader(TensorDataset(X_train_tensor, y_train_tensor), batch_size=128, sampler=val_sampler)
     
-    fnn = FNN()        
+    fnn = FNN()
+    fnn.train()        
     optimizer = torch.optim.AdamW(fnn.parameters(), lr=0.0001, weight_decay=0.01)
     L = nn.CrossEntropyLoss()
     
@@ -102,6 +103,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train_tensor)):
 
     # Eval accuracy
     with torch.no_grad():
+        fnn.eval()
         logits = fnn(X_test_tensor)
         predictions = torch.argmax(logits, dim=1)
         accuracy = (predictions == y_test_tensor).sum().item() / len(y_test_tensor)
