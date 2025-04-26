@@ -1,80 +1,92 @@
 # Sentiment Analysis with Feedforward Neural Networks
 
-This project implements sentiment analysis on IMDb movie reviews using feedforward neural networks (FNNs) in PyTorch. The goal is to build a robust binary classifier that determines whether a given review expresses a positive or negative sentiment. The model is trained on TF-IDF features derived from preprocessed text data and evaluated using multiple training strategies, including hyperparameter tuning, k-fold cross-validation, dropout regularization, and ensemble learning.
+This project applies feedforward neural networks (FNNs) to binary sentiment classification of IMDb movie reviews using PyTorch. Reviews are vectorized using TF-IDF, and multiple training strategies—such as dropout regularization, k-fold cross-validation, and ensemble learning—are used to assess and improve model performance. Accuracy is compared against a logistic regression baseline.
 
 ## Overview
 
-This project explores the application of deep learning techniques to natural language processing tasks, specifically sentiment classification. It emphasizes end-to-end model development—from data preprocessing and vectorization to model training and performance evaluation.
+This project demonstrates a full deep learning pipeline for natural language sentiment classification:
+- Data preprocessing and vectorization
+- Model design and training
+- Evaluation via cross-validation and regularization
+- Comparison against traditional ML models
 
 ## Features
 
-- TF-IDF feature extraction using `scikit-learn`
-- Feedforward neural network implementation with PyTorch
-- Hyperparameter tuning (layers, hidden units, learning rate, weight decay)
-- Manual k-fold cross-validation training pipeline
-- Dropout regularization applied at multiple layers
-- Ensemble learning using bagged dropout models
-- Performance comparison with logistic regression as a baseline
+- TF-IDF vectorization using `scikit-learn`
+- Deep feedforward network (3 hidden layers)
+- ReLU activations, softmax output
+- AdamW optimizer with L2 regularization
+- Manual k-fold cross-validation
+- Dropout for regularization
+- Bagging ensemble of dropout-trained models
+- Baseline comparison with logistic regression
 
-## Technologies Used
+## Technologies
 
-- Python 3.x
-- PyTorch
-- scikit-learn
-- NumPy
-- pandas
-- matplotlib (for result visualization)
-
+- Python 3.x  
+- PyTorch  
+- scikit-learn  
+- NumPy  
+- pandas  
+- matplotlib  
 
 ## Methodology
 
-### Data Preparation
-
-- Raw IMDb reviews are cleaned and normalized (punctuation removal, lowercasing, tokenization).
-- Reviews are transformed into TF-IDF vectors using `TfidfVectorizer`.
-- The dataset is split into 70% training and 30% testing data.
+### Data Preprocessing
+- IMDb reviews are cleaned (lowercased, tokenized, punctuation removed).
+- Text is vectorized using `TfidfVectorizer` with a max feature limit (5000 terms).
+- Dataset split: 70% train / 30% test.
 
 ### Model Architecture
+- Fully connected feedforward neural network:
+  - Input: 5000-dim TF-IDF vector
+  - Hidden Layer 1: 512 units, ReLU
+  - Hidden Layer 2: 128 units, ReLU
+  - Hidden Layer 3: 64 units, ReLU
+  - Output Layer: 2 units, softmax
+- Loss function: CrossEntropyLoss
+- Optimizer: AdamW (learning rate = 0.0001, weight decay = 0.01)
+- Batch size: 512
 
-- The classifier is a multi-layer feedforward neural network.
-- Hidden layers use ReLU activation.
-- Output layer uses sigmoid activation for binary classification.
-- Model is trained using binary cross-entropy loss and optimized via Adam.
-
-### Hyperparameter Tuning
-
-- The number of layers, hidden units, learning rate, and weight decay are tuned empirically.
-- Accuracy is compared to a baseline logistic regression model trained on the same data.
+### Baseline Comparison
+- A logistic regression model (from textbook) is trained with GridSearchCV.
+- Accuracy comparison:
+  - **FNN:** 89.0%
+  - **Logistic Regression:** 89.9%
 
 ### Cross-Validation
+- 5-fold cross-validation is manually implemented.
+- Each fold trains and evaluates the model on a different subset.
+- Final average accuracy across folds: **88.2%**
+- Training time remains under one minute per fold.
 
-- A custom implementation of k-fold cross-validation is used due to lack of native PyTorch support.
-- The model is trained multiple times with different folds, and performance metrics are averaged.
-
-### Dropout and Regularization
-
-- Dropout layers are inserted between fully connected layers to prevent overfitting.
-- Dropout probabilities are tuned per layer.
-- Model performance with dropout is compared to baseline.
+### Dropout Regularization
+- Dropout layers added between hidden layers.
+- Dropout model slightly outperforms baseline (89.1% vs 89.0%).
+- Prevents overfitting by improving generalization.
 
 ### Ensemble Learning
-
-- Multiple FNN models are trained with different dropout configurations.
-- Predictions are aggregated using majority voting (bagging) to form an ensemble classifier.
-- Ensemble performance is compared to individual models in terms of accuracy and training time.
+- An ensemble of five dropout-regularized models is trained.
+- Bagging (majority voting) used to combine predictions.
+- Ensemble accuracy: **88.2%**
+- Slight decrease in accuracy likely due to over-regularization and averaging.
 
 ## How to Run
-
-### Virtual Environment (recommended if dependencies dont install properly)
-
-In the project directory (Linux):
-
-Create the virtual environment: `python3 -m venv venv`
-
-Start it: `source venv/bin/activate`
 
 ### Installation
 
 Install dependencies:
 `pip install -r requirements.txt`
+
+### (Optional) Set up a Virtual Environment
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Linux/macOS
+```
+
+## Notes
+
+- FNN performs competitively with logistic regression although the regression is simpler the FNN trains faster due to fewer grid search steps.
+
+
 
